@@ -1,0 +1,22 @@
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Source dataset (large file; keep local unless intentionally shared)
+all_upwork_jobs_2024-02-07-2024-03-24.csv
+
+# Logs and temporary files
+*.log
+.DS_Store
+Thumbs.db

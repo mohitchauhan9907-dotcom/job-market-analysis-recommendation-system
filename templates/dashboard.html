@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Market Analytics Dashboard</title>
+
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: linear-gradient(120deg, #1e3a8a, #6d28d9);
+            color: white;
+            padding: 28px 5%;
+        }
+
+        header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #e0e7ff;
+        }
+
+        .navigation {
+            margin-top: 18px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            margin-right: 8px;
+            border: 1px solid #ffffff80;
+            border-radius: 8px;
+        }
+
+        .navigation a:hover {
+            background: #ffffff25;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .status {
+            padding: 14px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #6366f1;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .kpi {
+            background: white;
+            padding: 23px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000008;
+        }
+
+        .kpi h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .kpi .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4338ca;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000008;
+            min-width: 0;
+        }
+
+        .chart-card h2 {
+            font-size: 18px;
+            margin: 5px 0 12px;
+        }
+
+        .chart {
+            width: 100%;
+            height: 350px;
+        }
+
+        .note {
+            margin-top: 22px;
+            background: #fff7ed;
+            border-left: 5px solid #f97316;
+            border-radius: 8px;
+            padding: 16px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+
+        @media (max-width: 800px) {
+            .charts {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📊 Job Market Analytics Dashboard</h1>
+    <p>Upwork Job Postings | February–March 2024 Dataset</p>
+
+    <div class="navigation">
+        <a href="/">← Job Recommendation System</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="status" id="status">
+        Loading dashboard data...
+    </div>
+
+    <!-- KPI CARDS -->
+    <section class="kpi-grid">
+
+        <div class="kpi">
+            <h3>Total Job Postings</h3>
+            <div class="value" id="totalJobs">—</div>
+        </div>
+
+        <div class="kpi">
+            <h3>Unique Job Titles</h3>
+            <div class="value" id="uniqueTitles">—</div>
+        </div>
+
+        <div class="kpi">
+            <h3>Countries Represented</h3>
+            <div class="value" id="totalCountries">—</div>
+        </div>
+
+        <div class="kpi">
+            <h3>Hourly Jobs</h3>
+            <div class="value" id="hourlyJobs">—</div>
+        </div>
+
+        <div class="kpi">
+            <h3>Fixed-Price Jobs</h3>
+            <div class="value" id="fixedJobs">—</div>
+        </div>
+
+    </section>
+
+    <!-- INTERACTIVE CHARTS -->
+    <section class="charts">
+
+        <div class="chart-card">
+            <h2>📈 Monthly Job Posting Trend</h2>
+            <div id="monthlyChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card">
+            <h2>💼 Hourly vs Fixed-Price Jobs</h2>
+            <div id="paymentChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card">
+            <h2>🌍 Top Countries by Job Postings</h2>
+            <div id="countryChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card">
+            <h2>🔥 Most Frequently Posted Job Titles</h2>
+            <div id="titleChart" class="chart"></div>
+        </div>
+
+    </section>
+
+    <div class="note">
+        <strong>Data interpretation:</strong>
+        These charts describe the job postings available in the supplied
+        dataset. They do not represent the entire Upwork marketplace.
+        Monthly comparisons should be interpreted cautiously because the
+        dataset has very few records for earlier months.
+    </div>
+
+</main>
+
+<footer>
+    Job Market Analysis & Recommendation System | Python + Flask + Plotly
+</footer>
+
+<script>
+    const numberFormat = new Intl.NumberFormat("en-IN");
+
+    function getValue(obj, possibleKeys) {
+        for (const key of possibleKeys) {
+            if (obj && obj[key] !== undefined && obj[key] !== null) {
+                return obj[key];
+            }
+        }
+        return 0;
+    }
+
+    function makeChart(id, chartData, layout = {}) {
+        const defaultLayout = {
+            autosize: true,
+            margin: { t: 20, r: 20, b: 70, l: 65 },
+            paper_bgcolor: "white",
+            plot_bgcolor: "white",
+            font: {
+                family: "Arial, sans-serif",
+                color: "#334155"
+            },
+            ...layout
+        };
+
+        Plotly.newPlot(id, chartData, defaultLayout, {
+            responsive: true,
+            displaylogo: false
+        });
+    }
+
+    async function loadDashboard() {
+        const status = document.getElementById("status");
+
+        try {
+            const response = await fetch("/api/dashboard-data");
+
+            if (!response.ok) {
+                throw new Error(
+                    "Could not load dashboard data. HTTP " + response.status
+                );
+            }
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const monthly = data.monthly_jobs || [];
+            const payments = data.payment_trend || [];
+            const countries = data.top_countries || [];
+            const titles = data.top_titles || [];
+
+            // =========================================
+            // 1. CORRECT KPI VALUES FROM dashboard.json
+            // =========================================
+
+            const kpis = data.kpis;
+
+            if (!kpis) {
+                throw new Error(
+                    "KPI data missing. Please update dashboard.json."
+                );
+            }
+
+            document.getElementById("totalJobs").textContent =
+                numberFormat.format(kpis.total_jobs);
+
+            document.getElementById("uniqueTitles").textContent =
+                numberFormat.format(kpis.unique_titles);
+
+            document.getElementById("totalCountries").textContent =
+                numberFormat.format(kpis.countries);
+
+            document.getElementById("hourlyJobs").textContent =
+                numberFormat.format(kpis.hourly_jobs);
+
+            document.getElementById("fixedJobs").textContent =
+                numberFormat.format(kpis.fixed_jobs);
+
+            // =========================================
+            // 2. MONTHLY JOB POSTING TREND
+            // =========================================
+
+            makeChart("monthlyChart", [{
+                x: monthly.map(row => row.month),
+
+                y: monthly.map(row =>
+                    Number(getValue(
+                        row,
+                        ["Total Jobs", "total_jobs", "Job Postings"]
+                    ))
+                ),
+
+                type: "scatter",
+                mode: "lines+markers",
+
+                line: {
+                    color: "#6366f1",
+                    width: 4
+                },
+
+                marker: {
+                    size: 9,
+                    color: "#8b5cf6"
+                },
+
+                fill: "tozeroy",
+                fillcolor: "rgba(99,102,241,0.12)",
+
+                hovertemplate:
+                    "%{x}<br>Jobs: %{y:,}<extra></extra>"
+
+            }], {
+                xaxis: {
+                    title: "Month"
+                },
+
+                yaxis: {
+                    title: "Number of Job Postings",
+                    rangemode: "tozero"
+                }
+            });
+
+            // =========================================
+            // 3. HOURLY VS FIXED-PRICE JOBS
+            // =========================================
+
+            makeChart("paymentChart", [
+                {
+                    x: payments.map(row => row.month),
+
+                    y: payments.map(row =>
+                        Number(getValue(
+                            row,
+                            ["Hourly Jobs", "hourly_jobs"]
+                        ))
+                    ),
+
+                    name: "Hourly",
+                    type: "bar",
+
+                    marker: {
+                        color: "#6366f1"
+                    }
+                },
+
+                {
+                    x: payments.map(row => row.month),
+
+                    y: payments.map(row =>
+                        Number(getValue(
+                            row,
+                            [
+                                "Fixed-Price Jobs",
+                                "Fixed Price Jobs",
+                                "fixed_jobs"
+                            ]
+                        ))
+                    ),
+
+                    name: "Fixed-Price",
+                    type: "bar",
+
+                    marker: {
+                        color: "#f59e0b"
+                    }
+                }
+
+            ], {
+                barmode: "group",
+
+                xaxis: {
+                    title: "Month"
+                },
+
+                yaxis: {
+                    title: "Job Postings",
+                    rangemode: "tozero"
+                },
+
+                legend: {
+                    orientation: "h",
+                    y: -0.25
+                }
+            });
+
+            // =========================================
+            // 4. TOP COUNTRIES
+            // =========================================
+
+            const countryNames = countries.map(row =>
+                getValue(row, ["Country", "country"])
+            ).reverse();
+
+            const countryCounts = countries.map(row =>
+                Number(getValue(
+                    row,
+                    ["Job Postings", "job_postings", "Count"]
+                ))
+            ).reverse();
+
+            makeChart("countryChart", [{
+                x: countryCounts,
+                y: countryNames,
+
+                type: "bar",
+                orientation: "h",
+
+                marker: {
+                    color: countryCounts,
+                    colorscale: "Viridis",
+                    showscale: false
+                },
+
+                hovertemplate:
+                    "%{y}<br>Jobs: %{x:,}<extra></extra>"
+
+            }], {
+                margin: {
+                    t: 15,
+                    r: 20,
+                    b: 45,
+                    l: 120
+                },
+
+                xaxis: {
+                    title: "Job Postings"
+                },
+
+                yaxis: {
+                    automargin: true
+                }
+            });
+
+            // =========================================
+            // 5. TOP JOB TITLES
+            // =========================================
+
+            const titleNames = titles.map(row =>
+                getValue(row, ["Job Title", "title", "Title"])
+            ).reverse();
+
+            const titleCounts = titles.map(row =>
+                Number(getValue(
+                    row,
+                    ["Job Postings", "job_postings", "Count"]
+                ))
+            ).reverse();
+
+            makeChart("titleChart", [{
+                x: titleCounts,
+                y: titleNames,
+
+                type: "bar",
+                orientation: "h",
+
+                marker: {
+                    color: titleCounts,
+                    colorscale: "Plasma",
+                    showscale: false
+                },
+
+                hovertemplate:
+                    "%{y}<br>Postings: %{x:,}<extra></extra>"
+
+            }], {
+                margin: {
+                    t: 15,
+                    r: 20,
+                    b: 45,
+                    l: 160
+                },
+
+                xaxis: {
+                    title: "Job Postings"
+                },
+
+                yaxis: {
+                    automargin: true
+                }
+            });
+
+            status.textContent =
+                "✅ Dashboard loaded successfully!";
+
+            status.style.borderLeftColor = "#16a34a";
+
+        } catch (error) {
+            console.error(error);
+
+            status.textContent =
+                "❌ " + error.message +
+                " Please check app.py and dashboard_data/dashboard.json.";
+
+            status.style.borderLeftColor = "#dc2626";
+        }
+    }
+
+    loadDashboard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+services:
+  job-market-app:
+    build: .
+    container_name: job-market-recommendation
+    ports:
+      - "5000:5000"
+    restart: unless-stopped

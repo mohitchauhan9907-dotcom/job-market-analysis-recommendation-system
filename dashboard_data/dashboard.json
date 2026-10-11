@@ -1,0 +1,142 @@
+{
+    "monthly_jobs": [
+        {
+            "month": "2023-11",
+            "Total Jobs": 1
+        },
+        {
+            "month": "2023-12",
+            "Total Jobs": 10
+        },
+        {
+            "month": "2024-01",
+            "Total Jobs": 96
+        },
+        {
+            "month": "2024-02",
+            "Total Jobs": 101887
+        },
+        {
+            "month": "2024-03",
+            "Total Jobs": 142834
+        }
+    ],
+    "payment_trend": [
+        {
+            "month": "2023-11",
+            "Fixed-Price Jobs": 0,
+            "Hourly Jobs": 1
+        },
+        {
+            "month": "2023-12",
+            "Fixed-Price Jobs": 2,
+            "Hourly Jobs": 8
+        },
+        {
+            "month": "2024-01",
+            "Fixed-Price Jobs": 32,
+            "Hourly Jobs": 64
+        },
+        {
+            "month": "2024-02",
+            "Fixed-Price Jobs": 42407,
+            "Hourly Jobs": 59480
+        },
+        {
+            "month": "2024-03",
+            "Fixed-Price Jobs": 61450,
+            "Hourly Jobs": 81384
+        }
+    ],
+    "top_countries": [
+        {
+            "Country": "United States",
+            "Job Postings": 99834
+        },
+        {
+            "Country": "United Kingdom",
+            "Job Postings": 19149
+        },
+        {
+            "Country": "India",
+            "Job Postings": 15835
+        },
+        {
+            "Country": "Australia",
+            "Job Postings": 12618
+        },
+        {
+            "Country": "Canada",
+            "Job Postings": 11658
+        },
+        {
+            "Country": "Pakistan",
+            "Job Postings": 5291
+        },
+        {
+            "Country": "Germany",
+            "Job Postings": 4844
+        },
+        {
+            "Country": "Netherlands",
+            "Job Postings": 4435
+        },
+        {
+            "Country": "United Arab Emirates",
+            "Job Postings": 4039
+        },
+        {
+            "Country": "France",
+            "Job Postings": 3163
+        }
+    ],
+    "top_titles": [
+        {
+            "Job Title": "social media manager",
+            "Job Postings": 509
+        },
+        {
+            "Job Title": "logo design",
+            "Job Postings": 490
+        },
+        {
+            "Job Title": "video editor",
+            "Job Postings": 413
+        },
+        {
+            "Job Title": "virtual assistant",
+            "Job Postings": 408
+        },
+        {
+            "Job Title": "graphic designer",
+            "Job Postings": 367
+        },
+        {
+            "Job Title": "youtube video editor",
+            "Job Postings": 181
+        },
+        {
+            "Job Title": "lead generation",
+            "Job Postings": 176
+        },
+        {
+            "Job Title": "full stack developer",
+            "Job Postings": 172
+        },
+        {
+            "Job Title": "logo designer",
+            "Job Postings": 171
+        },
+        {
+            "Job Title": "data entry",
+            "Job Postings": 169
+        }
+    ],
+    "kpis": {
+        "total_jobs": 244828,
+        "unique_titles": 201374,
+        "countries": 212,
+        "hourly_jobs": 140937,
+        "fixed_jobs": 103891
+    }
+}

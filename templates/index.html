@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Market Analysis & Recommendation System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #dbeafe;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .results-info {
+            margin: 12px 0 18px;
+            color: #475569;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #dbeafe;
+            color: #1e40af;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+        }
+
+        .fixed-badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+        }
+
+        .score {
+            display: inline-block;
+            background: #ede9fe;
+            color: #5b21b6;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .empty {
+            padding: 15px;
+            background: #fff7ed;
+            color: #9a3412;
+            border-radius: 7px;
+        }
+
+        .note {
+            margin-top: 18px;
+            padding: 12px;
+            background: #eff6ff;
+            color: #1e40af;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            form {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Job Market Analysis</h1>
+        <p>Intelligent Job Search &amp; Recommendation System</p>
+    </header>
+
+    <main class="container">
+
+        <!-- Job Search Section -->
+
+        <section class="card">
+
+            <h2>Find Your Next Opportunity</h2>
+
+            <p class="description">
+                Search for a job title and explore matching opportunities
+                from our job market dataset.
+            </p>
+
+            <form method="POST" action="/">
+
+                <input
+                    type="text"
+                    name="query"
+                    placeholder="Example: Python Developer"
+                    value="{{ query }}"
+                    required
+                >
+
+                <button type="submit">
+                    Search Jobs
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Search Results Section -->
+
+        {% if query %}
+
+        <section class="card">
+
+            <h2>Job Recommendations</h2>
+
+            {% if recommendations %}
+
+            <p class="results-info">
+                Results for:
+                <strong>{{ query }}</strong>
+            </p>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Payment Type</th>
+                            <th>Hourly Rate</th>
+                            <th>Country</th>
+                            <th>Similarity Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for job in recommendations %}
+
+                        <tr>
+
+                            <!-- Job Title -->
+
+                            <td>
+                                {{ job.title or 'Not specified' }}
+                            </td>
+
+                            <!-- Payment Type -->
+
+                            <td>
+
+                                {% if job.payment_type == "Hourly" %}
+
+                                    <span class="badge">
+                                        Hourly
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="fixed-badge">
+                                        Fixed Price
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- Hourly Rate -->
+
+                            <td>
+                                {{ job.hourly_rate }}
+                            </td>
+
+                            <!-- Country -->
+
+                            <td>
+                                {{ job.country or 'Not specified' }}
+                            </td>
+
+                            <!-- Similarity Score -->
+
+                            <td>
+                                <span class="score">
+                                    {{ job.similarity }}%
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="note">
+                <strong>Note:</strong>
+                Similarity Score measures text similarity between your
+                search query and the job title. It is not a probability
+                of getting hired or a measure of job suitability.
+            </div>
+
+            {% else %}
+
+            <p class="empty">
+                No matching jobs found.
+                Please try another job title or keyword.
+            </p>
+
+            {% endif %}
+
+        </section>
+
+        {% endif %}
+
+    </main>
+
+    <footer>
+        Job Market Analysis &amp; Recommendation System
+        <br>
+        Built with Python, Pandas, Scikit-learn and Flask
+    </footer>
+
+</body>
+
+</html>
